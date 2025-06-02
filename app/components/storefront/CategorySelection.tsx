@@ -6,8 +6,6 @@ import {
   Tag,
   ShoppingBag,
   Gamepad2,
-  Zap,
-  Wallet,
   Bitcoin,
   ShoppingBasket,
 } from "lucide-react"
@@ -28,7 +26,7 @@ const categories = [
     gradient: "bg-gradient-to-tr from-purple-900 via-purple-800 to-purple-700",
   },
   {
-    name: "Retail & eCommerce",
+    name: "Shopping",
     icon: <ShoppingBasket className="h-12 w-12" />,
     href: "/products/retail",
     gradient: "bg-gradient-to-tr from-pink-900 via-pink-800 to-pink-700",
@@ -45,18 +43,8 @@ const categories = [
     href: "/products/crypto",
     gradient: "bg-gradient-to-tr from-yellow-900 via-yellow-800 to-yellow-700",
   },
-  {
-    name: "Digital Wallets & Payments",
-    icon: <Wallet className="h-12 w-12" />,
-    href: "/products/digital-wallets",
-    gradient: "bg-gradient-to-tr from-indigo-900 via-indigo-800 to-indigo-700",
-  },
-  {
-    name: "Utilities",
-    icon: <Zap className="h-12 w-12" />,
-    href: "/products/utilities",
-    gradient: "bg-gradient-to-tr from-orange-900 via-orange-800 to-orange-700",
-  },
+  
+ 
 ]
 
 // Motion variants for card animations
