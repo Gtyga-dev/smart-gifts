@@ -1,26 +1,34 @@
 "use client"
+
 import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components"
 import EmailInput from "@/app/components/EmailInput"
 import { FaGoogle } from "react-icons/fa"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card"
 import { motion } from "framer-motion"
-import { UserPlus} from "lucide-react"
+import { UserPlus } from "lucide-react"
 
 export default function SignUp() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-background p-4 relative overflow-hidden cyber-grid">
-      {/* Animated background elements */}
+      {/* Background bubbles */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(6)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute rounded-full bg-primary/10"
               style={{
-                width: Math.random() * 300 + 50,
-                height: Math.random() * 300 + 50,
+                width: Math.random() * 250 + 80,
+                height: Math.random() * 250 + 80,
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,
               }}
@@ -33,7 +41,7 @@ export default function SignUp() {
               }}
               transition={{
                 duration: 10 + i * 2,
-                repeat: Number.POSITIVE_INFINITY,
+                repeat: Infinity,
                 repeatType: "reverse",
                 ease: "easeInOut",
               }}
@@ -42,32 +50,41 @@ export default function SignUp() {
         </div>
       </div>
 
+      {/* Main card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md z-10"
       >
-        <Card className="bg-gradient-to-br from-card to-card/50 shadow-xl border border-primary/30 backdrop-blur-sm relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl blur opacity-50"></div>
-          <CardHeader className="space-y-1 flex flex-col items-center relative">
+        <Card className="bg-gradient-to-br from-card to-card/60 shadow-2xl border border-primary/20 backdrop-blur-lg relative rounded-2xl overflow-hidden">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl blur opacity-40 pointer-events-none"></div>
+
+          {/* Header */}
+          <CardHeader className="space-y-1 flex flex-col items-center relative z-10">
             <motion.div
               className="rounded-full overflow-hidden mb-4 p-2 bg-primary/10 animate-glow"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className="relative">
-                <Image src="/tlogo.png" alt="Smart Cards Logo" width={100} height={100} className="brightness-0 filter invert" />
-              </div>
+              <Image
+                src="/tlogo.png"
+                alt="Smart Cards Logo"
+                width={100}
+                height={100}
+                className="brightness-0 invert"
+              />
             </motion.div>
             <CardTitle className="text-3xl font-bold text-center text-yellow-50">Join Smart Cards</CardTitle>
             <CardDescription className="text-muted-foreground text-center">
               Create an account to start shopping
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6 relative">
-            {/* Google Sign-up */}
+
+          {/* Content */}
+          <CardContent className="space-y-6 relative z-10">
+            {/* Google signup button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -106,7 +123,7 @@ export default function SignUp() {
               </div>
             </motion.div>
 
-            {/* Email Input for Sign-up */}
+            {/* Email input */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -115,7 +132,9 @@ export default function SignUp() {
               <EmailInput isSignUp />
             </motion.div>
           </CardContent>
-          <CardFooter className="relative">
+
+          {/* Footer */}
+          <CardFooter className="relative z-10">
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

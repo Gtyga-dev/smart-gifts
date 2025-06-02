@@ -1,4 +1,5 @@
 "use client"
+
 import { RegisterLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components"
 import { FaGoogle } from "react-icons/fa"
 import Image from "next/image"
@@ -6,75 +7,76 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import EmailInput from "@/app/components/EmailInput"
 import { motion } from "framer-motion"
-import { LogIn} from "lucide-react"
+import { LogIn } from "lucide-react"
 
 export default function SignIn() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-background p-4 relative overflow-hidden cyber-grid">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-primary/10"
-              style={{
-                width: Math.random() * 300 + 50,
-                height: Math.random() * 300 + 50,
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-              }}
-              initial={{ opacity: 0.1, scale: 0 }}
-              animate={{
-                opacity: [0.1, 0.2, 0.1],
-                scale: [0, 1],
-                x: [0, Math.random() * 100 - 50],
-                y: [0, Math.random() * 100 - 50],
-              }}
-              transition={{
-                duration: 10 + i * 2,
-                repeat: Number.POSITIVE_INFINITY,
-                repeatType: "reverse",
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#121212] to-[#0f0f0f] px-4 py-10 relative overflow-hidden">
+      {/* Ambient animated circles */}
+      <div className="absolute inset-0 -z-10">
+        {[...Array(4)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-primary/10 blur-3xl"
+            style={{
+              width: Math.random() * 300 + 150,
+              height: Math.random() * 300 + 150,
+              top: `${Math.random() * 90}%`,
+              left: `${Math.random() * 90}%`,
+            }}
+            animate={{
+              x: [0, Math.random() * 50 - 25],
+              y: [0, Math.random() * 50 - 25],
+              opacity: [0.2, 0.1, 0.2],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 10 + i * 2,
+              ease: "easeInOut",
+              repeatType: "mirror",
+            }}
+          />
+        ))}
       </div>
 
+      {/* Auth Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6 }}
         className="w-full max-w-md z-10"
       >
-        <Card className="bg-gradient-to-br from-card to-card/50 shadow-xl border border-primary/30 backdrop-blur-sm relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl blur opacity-50"></div>
-          <CardHeader className="space-y-1 flex flex-col items-center relative">
+        <Card className="bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl relative overflow-hidden">
+          {/* Glow ring effect */}
+          <div className="absolute -inset-[1px] bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl blur-xl opacity-50 pointer-events-none z-0" />
+
+          {/* Header */}
+          <CardHeader className="relative z-10 flex flex-col items-center gap-4 pt-6">
             <motion.div
-              className="rounded-full overflow-hidden mb-4 p-2 bg-primary/10 animate-glow"
-              initial={{ scale: 0.8, opacity: 0 }}
+              className="rounded-full bg-primary/10 p-3"
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ delay: 0.2 }}
             >
-              <div className="relative">
-              
-                <Image src="/tlogo.png" alt="smart cards Logo" width={100} height={100} className="brightness-0 filter invert" />
-              </div>
+              <Image src="/tlogo.png" alt="Smart Cards" width={80} height={80} className="invert" />
             </motion.div>
-            <CardTitle className="text-3xl font-bold text-center text-yellow-50">Sign In to Smart Cards</CardTitle>
+            <CardTitle className="text-2xl text-white text-center font-semibold">
+              Sign In to <span className="text-primary">Smart Cards</span>
+            </CardTitle>
             <CardDescription className="text-muted-foreground text-center">
-              Enter your details to access your account
+              Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6 relative">
-            {/* Google Sign-in */}
+
+          {/* Content */}
+          <CardContent className="relative z-10 space-y-6 px-6">
+            {/* Google login */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              transition={{ delay: 0.3 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
               <LoginLink
                 className="w-full"
@@ -84,9 +86,9 @@ export default function SignIn() {
               >
                 <Button
                   variant="outline"
-                  className="w-full border-primary/30 hover:bg-primary/10 text-primary-foreground transition-all duration-300"
+                  className="w-full border border-primary/30 hover:bg-primary/10 text-white transition-all"
                 >
-                  <FaGoogle className="mr-2 h-4 w-4" />
+                  <FaGoogle className="mr-2" />
                   Sign in with Google
                 </Button>
               </LoginLink>
@@ -97,35 +99,37 @@ export default function SignIn() {
               className="relative"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.4 }}
+              transition={{ delay: 0.4 }}
             >
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-primary/30" />
+                <span className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+                <span className="bg-black/80 px-2 text-muted-foreground">or continue with email</span>
               </div>
             </motion.div>
 
-            {/* Email Input for Email Sign-in */}
+            {/* EmailInput */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.5 }}
+              transition={{ delay: 0.5 }}
             >
               <EmailInput />
             </motion.div>
           </CardContent>
-          <CardFooter className="relative">
+
+          {/* Footer */}
+          <CardFooter className="relative z-10 flex justify-center pb-6 px-6">
             <motion.p
+              className="text-sm text-muted-foreground text-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.6 }}
-              className="text-sm text-center w-full text-muted-foreground"
+              transition={{ delay: 0.6 }}
             >
               Don&apos;t have an account?{" "}
               <RegisterLink
-                className="text-primary hover:text-primary/80 transition-colors duration-200"
+                className="text-primary hover:underline"
                 authUrlParams={{
                   connection_id: process.env.NEXT_PUBLIC_KINDE_CONNECTION_GOOGLE || "",
                 }}
@@ -136,14 +140,14 @@ export default function SignIn() {
           </CardFooter>
         </Card>
 
-        {/* Floating icon */}
+        {/* Floating Icon */}
         <motion.div
-          className="absolute bottom-6 right-6 text-primary/50 animate-float"
+          className="absolute bottom-6 right-6 text-primary/50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
+          transition={{ delay: 0.8 }}
         >
-          <LogIn className="h-12 w-12" />
+          <LogIn className="h-10 w-10 animate-float" />
         </motion.div>
       </motion.div>
     </div>
