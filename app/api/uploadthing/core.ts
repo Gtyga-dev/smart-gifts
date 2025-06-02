@@ -4,7 +4,7 @@ import { UploadThingError } from "uploadthing/server";
 
 const AUTHORIZED_EMAILS = [
   "geofreypaul40@gmail.com",
-  "msosadaina@gmail.com",
+  
 ]
 
 const f = createUploadthing();

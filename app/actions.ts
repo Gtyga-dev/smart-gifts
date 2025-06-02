@@ -17,10 +17,6 @@ type ResultType = {
 
 const allowedEmails = [
   "geofreypaul40@gmail.com",
-  "thalapatrick2003@gmail.com",
-  "makungwafortune78@gmail.com",
-  "mikefchimwaza03@gmail.com",
-  "msosadaina@gmail.com",
 ];
 
 export async function createProduct(prevState: unknown, formData: FormData) {

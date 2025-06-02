@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic"
 
 import { CategoriesSelection } from "../components/storefront/CategorySelection"
 import { HowItWorks } from "../components/storefront/HowItWorks"
-import { Testimonials } from "../components/storefront/Testimonials"
 import { HeroWrapper } from "../components/storefront/HeroWrapper"
 
 import { TrendingGiftCardsWrapper } from "../components/storefront/TrendingGiftCardsWrapper"
@@ -17,7 +16,7 @@ export default function IndexPage() {
       <FeaturedProducts />
       <TrendingGiftCardsWrapper />
       <HowItWorks />
-      <Testimonials />
+     
     </div>
   )
 }

@@ -8,11 +8,7 @@ import { PendingP2PListings } from "@/app/components/dashboard/p2p/PendingP2pLis
 
 const allowedEmails = [
     "geofreypaul40@gmail.com",
-    "thalapatrick2003@gmail.com",
-    "makungwafortune78@gmail.com",
-    "msosadaina@gmail.com",
-    "mikefchimwaza03@gmail.com",
-    "brendaallie577@gmail.com",
+    
 ]
 
 function PendingListingsLoading() {

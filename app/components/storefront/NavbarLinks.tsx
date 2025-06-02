@@ -10,12 +10,9 @@ import {
   Gift,
   Home,
   Package,
-  Phone,
-  RefreshCw,
   ShoppingBag,
   ShoppingBasket,
   ShoppingCart,
-  Users,
   Wallet,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -47,23 +44,11 @@ export function NavbarLinks({ isMobile = false, onLinkClick }: NavbarLinksProps)
         { id: "gc-7", name: "Utilities", href: "/products/utilities", icon: Wallet },
       ],
     },
-    {
-      id: 2,
-      name: "Airtime",
-      href: "#",
-      icon: Phone,
-      isDropdown: true,
-      dropdownItems: [
-        { id: "air-1", name: "All Operators", href: "/airtime/all", icon: Phone },
-        { id: "air-2", name: "TNM", href: "/airtime/tnm", icon: Phone },
-        { id: "air-3", name: "Airtel", href: "/airtime/airtel", icon: Phone },
-        { id: "air-4", name: "International", href: "/airtime/international", icon: Phone },
-      ],
-    },
+ 
    
-    { id: 3, name: "P2P", href: "/p2p", icon: RefreshCw },
-    { id: 4, name: "My Orders", href: "/my-orders", icon: Package },
-    { id: 5, name: "Referrals", href: "/referrals", icon: Users },
+
+    { id: 2, name: "My Orders", href: "/my-orders", icon: Package },
+
   ]
 
   return (

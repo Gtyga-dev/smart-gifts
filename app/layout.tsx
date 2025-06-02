@@ -6,7 +6,7 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react"
-import ChatbotWidget from "./components/ChatBotWidget";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,7 +39,6 @@ export default function RootLayout({
         {children}
         <Toaster />
         <Analytics />
-        <ChatbotWidget />
       </body>
     </html>
   );

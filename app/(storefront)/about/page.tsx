@@ -109,20 +109,7 @@ export default function About() {
             Contact <span className="gradient-text">Us</span>
           </h2>
         </div>
-        <Card className="p-6 bg-card/80 border border-primary/20 shadow-lg">
-          <CardContent className="space-y-4">
-            <p className="text-lg">Office Address: Development House, Blantyre, Third Floor, Office 307</p>
-            <p className="text-lg">
-              Email:{" "}
-              <a
-                href="mailto:contact@SmartCards.store"
-                className="text-primary hover:text-primary/80 transition-colors duration-200"
-              >
-                contact@SmartCards.store
-              </a>
-            </p>
-          </CardContent>
-        </Card>
+     
       </motion.div>
     </div>
   )

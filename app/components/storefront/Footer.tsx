@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { SiFacebook, SiInstagram, SiX, SiDiscord, SiTiktok } from "react-icons/si"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { motion, useAnimation } from "framer-motion"
 import { useToast } from "@/hooks/use-toast"
-import { Send, ChevronRight, Mail, MapPin, Phone } from "lucide-react"
+import { Send, ChevronRight, Mail} from "lucide-react"
 import { useInView } from "react-intersection-observer"
 
 export function Footer() {
@@ -57,21 +57,7 @@ export function Footer() {
     },
   }
 
-  const socialLinks = [
-    {
-      icon: <SiFacebook size={20} />,
-      href: "https://www.facebook.com/profile.php?id=61568004368033",
-      label: "Facebook",
-    },
-    {
-      icon: <SiInstagram size={20} />,
-      href: "https://www.instagram.com/smartcards.mw/profilecard/?igsh=am80OWR6OWZ0MGlp",
-      label: "Instagram",
-    },
-    { icon: <SiX size={20} />, href: "https://x.com/smartcards01?t=cDVL2qQ0ctusyeB7O6onpw&s=09", label: "X" },
-    { icon: <SiDiscord size={20} />, href: "#", label: "Discord" },
-    { icon: <SiTiktok size={20} />, href: "#", label: "TikTok" },
-  ]
+
 
   return (
     <motion.footer
@@ -227,58 +213,8 @@ export function Footer() {
             </ul>
           </motion.div>
 
-          {/* Contact Info */}
-          <motion.div variants={itemVariants} className="md:col-span-3">
-            <div className="flex items-center gap-2 mb-4">
+   </div>
 
-              <h3 className="text-lg font-semibold gradient-text">Contact Us</h3>
-            </div>
-            <ul className="space-y-3 text-white">
-              <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Development House, Blantyre, Third Floor, Office 307</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-primary flex-shrink-0" />
-                <a href="mailto:contact@smartcards.store" className="hover:text-primary transition duration-300">
-                  contact@smartcards.store
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-primary flex-shrink-0" />
-                <a href="tel:+265888123456" className="hover:text-primary transition duration-300">
-                  +265 888 123 456
-                </a>
-              </li>
-            </ul>
-          </motion.div>
-        </div>
-
-        {/* Social Links and Copyright */}
-        <motion.div
-          variants={itemVariants}
-          className="border-t border-primary/20 pt-8 flex flex-col md:flex-row justify-between items-center"
-        >
-          <p className="text-sm text-white mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} Smart Cards powered by Trickal Holdings. All rights reserved.
-          </p>
-
-          <div className="flex space-x-4">
-            {socialLinks.map((link, index) => (
-              <motion.div key={index} whileHover={{ y: -3, scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white hover:text-primary transition duration-300 flex items-center justify-center h-10 w-10 rounded-full bg-card/50 border border-primary/20 hover:border-primary/50"
-                  aria-label={link.label}
-                >
-                  {link.icon}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </motion.footer>
   )

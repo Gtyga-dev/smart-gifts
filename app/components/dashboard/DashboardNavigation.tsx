@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { CreditCard, ImageIcon, LayoutDashboard, Package, RefreshCw, ShoppingBag, Users, Zap } from "lucide-react"
+import { CreditCard, LayoutDashboard, Package, ShoppingBag, Users, Zap } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -21,11 +21,7 @@ const links = [
     href: "/dashboard/products",
     icon: Package,
   },
-  {
-    name: "Banner Picture",
-    href: "/dashboard/banner",
-    icon: ImageIcon,
-  },
+
   {
     name: "Payments",
     href: "/dashboard/admin/orders",
@@ -35,16 +31,6 @@ const links = [
     name: "GiftCard Orders",
     href: "/dashboard/admin/gift-cards",
     icon: ShoppingBag,
-  },
-  {
-    name: "P2P Trading",
-    href: "/dashboard/p2p",
-    icon: RefreshCw,
-  },
-  {
-    name: "P2P Listings",
-    href: "/dashboard/p2p/listings",
-    icon: RefreshCw,
   },
   {
     name: "Reloadly Sync",
