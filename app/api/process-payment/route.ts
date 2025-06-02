@@ -15,7 +15,7 @@ const PAWAPAY_CONFIG = {
   },
   production: {
     apiUrl: "https://api.pawapay.io/deposits",
-    callbackUrl: "https://www.smartcards.store/api/payment-callback",
+    callbackUrl: "https://smart-gifts.vercel.app/api/payment-callback",
   },
 };
 
