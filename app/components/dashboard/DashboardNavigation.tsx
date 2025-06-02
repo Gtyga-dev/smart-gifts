@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { CreditCard, LayoutDashboard, Package, ShoppingBag, Users, Zap } from "lucide-react"
+import { CreditCard, LayoutDashboard, Package, ShoppingBag, Zap } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -37,11 +37,7 @@ const links = [
     href: "/dashboard/reloadly",
     icon: Zap,
   },
-  {
-    name: "Referrals",
-    href: "/dashboard/admin/referrals",
-    icon: Users,
-  },
+ 
 ]
 
 export function DashboardNavigation() {
