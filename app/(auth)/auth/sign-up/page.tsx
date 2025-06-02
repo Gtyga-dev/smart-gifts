@@ -58,7 +58,7 @@ export default function SignUp() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <div className="relative">
-                <Image src="/tlogo.png" alt="Smart Cards Logo" width={80} height={80} className="brightness-0 filter invert" />
+                <Image src="/tlogo.png" alt="Smart Cards Logo" width={100} height={100} className="brightness-0 filter invert" />
               </div>
             </motion.div>
             <CardTitle className="text-3xl font-bold text-center text-yellow-50">Join Smart Cards</CardTitle>
