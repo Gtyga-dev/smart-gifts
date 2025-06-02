@@ -1,0 +1,268 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String         @id @unique
+  email           String         @unique
+  firstName       String
+  lastName        String
+  profileImage    String
+  createdAt       DateTime       @default(now())
+  orders          Order[]
+  referralCodes   ReferralCode[]
+  referredBy      String? // ID of the user who referred this user
+  referralRewards Int            @default(0) // Total rewards earned from referrals 
+
+  // New fields for P2P payment details
+  mobileMoneyNumber String?
+  bankAccount       String?
+  bankName          String?
+
+  // New relations for P2P
+  p2pListings        P2PListing[]
+  p2pOffers          P2POffer[]
+  buyerTransactions  P2PTransaction[] @relation("BuyerTransactions")
+  sellerTransactions P2PTransaction[] @relation("SellerTransactions")
+}
+
+model Product {
+  id                     String        @id @default(uuid())
+  name                   String
+  description            String
+  status                 ProductStatus
+  price                  Int
+  images                 String[]
+  category               Category
+  isFeatured             Boolean       @default(false)
+  createdAt              DateTime      @default(now())
+  reviews                Review[]
+  reloadlyProductId      Int?
+  reloadlyBrandId        Int?
+  recipientCurrencyCode  String?
+  denominationType       String?
+  redemptionInstructions String?
+  reloadlyTransactionId  String?
+  deliveryMethod         String?
+}
+
+model Banner {
+  id          String   @id @default(uuid())
+  title       String
+  imageString String
+  createdAt   DateTime @default(now())
+}
+
+model Order {
+  id                    String                @id @default(uuid())
+  status                String                @default("pending")
+  amount                Int
+  userId                String?
+  transactionId         String?
+  paymentMethod         String?
+  paymentReference      String?
+  paymentScreenshot     String?
+  reloadlyTransactionId String?
+  deliveryMethod        String?
+  // New fields for currency handling and gift card emails
+  currency              String? // "USD" or "MWK"
+  exchangeRate          Float?
+  productType           String // Type of product
+  metadata Json?
+  emailSent             Boolean               @default(false) // Track if gift card email was sent
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  User                  User?                 @relation(fields: [userId], references: [id])
+  items                 OrderItem[]
+  ReloadlyTransaction   ReloadlyTransaction[]
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id])
+  productId   String
+  quantity    Int
+  priceAtTime Int
+  name        String
+  imageUrl    String
+  createdAt   DateTime @default(now())
+
+  @@index([orderId])
+}
+
+enum ProductStatus {
+  draft
+  published
+  archived
+}
+
+enum Category {
+  fashion
+  retail
+  entertainment
+  utilities
+  crypto
+  wallets
+}
+
+model Review {
+  id        String  @id @default(cuid())
+  rating    Float
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model ReferralProgram {
+  id                String         @id @default(uuid())
+  name              String
+  description       String
+  isActive          Boolean        @default(true)
+  rewardAmount      Int // Amount in cents
+  referrerReward    Int // Amount in cents for the referrer
+  refereeReward     Int // Amount in cents for the new user (referee)
+  minimumPurchase   Int? // Minimum purchase amount to qualify (in cents)
+  maxRewardsPerUser Int? // Maximum number of rewards a user can earn
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  referralCodes     ReferralCode[]
+}
+
+model ReferralCode {
+  id        String          @id @default(uuid())
+  code      String          @unique
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  programId String
+  program   ReferralProgram @relation(fields: [programId], references: [id])
+  timesUsed Int             @default(0)
+  referrals Referral[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([programId])
+}
+
+model Referral {
+  id                String         @id @default(uuid())
+  referralCodeId    String
+  referralCode      ReferralCode   @relation(fields: [referralCodeId], references: [id])
+  referrerId        String // User who referred
+  refereeId         String // User who was referred
+  status            ReferralStatus @default(pending)
+  rewardPaid        Boolean        @default(false)
+  rewardAmount      Int? // Amount in cents
+  qualifyingOrderId String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([referralCodeId])
+}
+
+enum ReferralStatus {
+  pending
+  completed
+  expired
+  cancelled
+}
+
+model P2PListing {
+  id            String   @id @default(uuid())
+  type          String // "buy" or "sell"
+  assetType     String // "crypto", "giftcard", "forex"
+  assetName     String
+  quantity      String
+  price         Int // Stored in cents
+  priceType     String // "fixed" or "negotiable"
+  paymentMethod String
+  description   String
+  terms         String?
+  status        String   @default("pending") // "pending", "active", "completed", "rejected"
+  userId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  offers       P2POffer[]
+  transactions P2PTransaction[]
+  user         User             @relation(fields: [userId], references: [id])
+}
+
+model P2POffer {
+  id             String    @id @default(uuid())
+  amount         Int       // Offer amount in cents
+  message        String?
+  paymentMethod  String?   // Buyer's preferred payment method
+  paymentDetails String?   // Buyer's payment details
+  status         String    @default("pending") // "pending", "accepted", "rejected"
+  listingId      String
+  userId         String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  // Relations
+  listing     P2PListing @relation(fields: [listingId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+}
+
+
+model P2PTransaction {
+  id               String    @id @default(uuid())
+  amount           Int       // Transaction amount in cents
+  status           String    @default("pending") // "pending", "completed", "cancelled", "disputed"
+  listingId        String
+  buyerId          String
+  sellerId         String
+  paymentMethod    String?
+  paymentProof     String?
+  paymentReference String?
+  additionalInfo   String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  // Relations
+  listing     P2PListing @relation(fields: [listingId], references: [id])
+  buyer       User       @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  seller      User       @relation("SellerTransactions", fields: [sellerId], references: [id])
+}
+
+
+// New model for tracking Reloadly transactions
+model ReloadlyTransaction {
+  id             String   @id @default(uuid())
+  externalId     String   @unique // Reloadly transaction ID
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id])
+  status         String
+  amount         Int // Amount in MWK (cents)
+  recipientEmail String?
+  recipientPhone String?
+  metadata       Json? // Additional transaction data
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([orderId])
+}
+
+
+model BackgroundJob {
+  id          String   @id @default(cuid())
+  type        String
+  status      String
+  data        Json
+  priority    Int      @default(0)
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  runAfter    DateTime
+  lastRun     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  result      Json?
+  error       String?
+}
