@@ -1,9 +1,18 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+import { motion, Variants } from "framer-motion"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.2, duration: 0.6, ease: 'easeOut' }
+  }),
+}
 
 export default function NotFound() {
   const [mounted, setMounted] = useState(false)
@@ -15,63 +24,74 @@ export default function NotFound() {
   if (!mounted) return null
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-      <div className="text-center px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-7xl sm:text-9xl font-extrabold text-white mb-4">404</h1>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Oops! Page Not Found</h2>
-          <p className="text-xl text-white mb-8">
-            The page you&apos;re looking for doesn&apos;t exist or has been moved.
-          </p>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-purple-100">
-            <Link href="/">
-              Go Back Home
-            </Link>
-          </Button>
-        </motion.div>
-      </div>
+    <div className="relative min-h-screen bg-gradient-to-br from-[#2e026d] via-[#701a75] to-[#ff1cf7] flex items-center justify-center overflow-hidden px-4">
+      {/* Floating particles */}
       <div className="absolute inset-0 z-[-1] overflow-hidden">
-        {[...Array(50)].map((_, i) => (
+        {[...Array(60)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-white rounded-full"
+            className="absolute bg-white/10 rounded-full blur-sm"
             style={{
-              width: Math.random() * 4 + 2 + 'px',
-              height: Math.random() * 4 + 2 + 'px',
-              top: Math.random() * 100 + '%',
-              left: Math.random() * 100 + '%',
+              width: `${Math.random() * 6 + 3}px`,
+              height: `${Math.random() * 6 + 3}px`,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
             }}
             animate={{
-              y: [0, -30],
-              opacity: [0, 1, 0],
+              y: [0, -30, 0],
+              opacity: [0, 0.6, 0],
             }}
             transition={{
-              duration: Math.random() * 2 + 1,
+              duration: Math.random() * 3 + 2,
               repeat: Infinity,
-              repeatType: 'loop',
-              ease: 'linear',
+              ease: "easeInOut",
               delay: Math.random() * 2,
             }}
           />
         ))}
       </div>
+
+      {/* Glass Card Content */}
+      <motion.div
+        className="relative z-10 max-w-lg w-full text-center bg-white/10 backdrop-blur-xl rounded-3xl p-10 border border-white/20 shadow-2xl"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.15 } },
+        }}
+      >
+        <motion.h1
+          className="text-8xl font-extrabold text-white drop-shadow-md"
+          variants={fadeUp}
+          custom={0}
+        >
+          404
+        </motion.h1>
+        <motion.h2
+          className="text-2xl md:text-3xl font-semibold text-white mt-4"
+          variants={fadeUp}
+          custom={1}
+        >
+          Page Not Found
+        </motion.h2>
+        <motion.p
+          className="text-white/80 text-lg mt-4 mb-6"
+          variants={fadeUp}
+          custom={2}
+        >
+          Sorry, the page you&apos;re looking for doesn&apos;t exist or has been moved.
+        </motion.p>
+        <motion.div variants={fadeUp} custom={3}>
+          <Button
+            asChild
+            size="lg"
+            className="bg-white text-purple-700 hover:bg-white/80 transition-all"
+          >
+            <Link href="/">Go Back Home</Link>
+          </Button>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }
-

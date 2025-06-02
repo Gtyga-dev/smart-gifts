@@ -1,7 +1,6 @@
 // app/components/storefront/RelatedProducts.tsx
-
 import prisma from "@/app/lib/db"
-import { LoadingProductCard, ProductCard } from "./ProductCard"
+import { ProductCard } from "./ProductCard"
 import { Suspense } from "react"
 import { unstable_noStore as noStore } from "next/cache"
 import type { Category } from "@prisma/client"
@@ -49,7 +48,7 @@ export function RelatedProducts({
       <h2 className="text-2xl font-extrabold tracking-tight">
         Related Products
       </h2>
-      <Suspense fallback={<LoadingRows />}>
+      <Suspense>
         <LoadRelatedProducts
           category={category}
           currentProductId={currentProductId}
@@ -77,19 +76,6 @@ async function LoadRelatedProducts({
       {products.map((item) => (
         <ProductCard key={item.id} item={item} />
       ))}
-    </div>
-  )
-}
-
-/**
- * Fallback skeleton UI while related products are loading.
- */
-function LoadingRows() {
-  return (
-    <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      <LoadingProductCard />
-      <LoadingProductCard />
-      <LoadingProductCard />
     </div>
   )
 }

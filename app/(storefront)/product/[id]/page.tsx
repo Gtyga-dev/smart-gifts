@@ -1,9 +1,7 @@
-
 import { ImageSlider } from "@/app/components/storefront/ImageSlider"
 import { RelatedProducts } from "@/app/components/storefront/RelatedProducts"
 import prisma from "@/app/lib/db"
 import { ProductStatus } from "@prisma/client"
-import { StarIcon} from "lucide-react"
 import { notFound } from "next/navigation"
 import { unstable_noStore as noStore } from "next/cache"
 import { ProductActions } from "./product-actions"
@@ -24,10 +22,7 @@ async function getData(productId: string) {
     },
   })
 
-  if (!data) {
-    return notFound()
-  }
-
+  if (!data) return notFound()
   return data
 }
 
@@ -37,46 +32,49 @@ export default async function ProductIdRoute({
   params: Promise<{ id: string }>
 }) {
   noStore()
-
   const { id } = await paramsPromise
   const data = await getData(id)
 
-  // Convert ProductStatus to "published" | "archived"
-  const productStatus: "published" | "archived" = data.status === ProductStatus.published ? "published" : "archived"
+  const productStatus: "published" | "archived" =
+    data.status === ProductStatus.published ? "published" : "archived"
 
   return (
-    <div className="cyber-grid">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start lg:gap-x-24 py-4">
-        <div className="animate-float">
-          <div className="relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-accent/30 rounded-xl blur-lg opacity-75"></div>
-            <ImageSlider images={data.images} />
-          </div>
+    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        {/* Product Image Section */}
+        <div className="relative rounded-xl overflow-hidden shadow-xl border border-border bg-background">
+          <div className="absolute -inset-1 bg-gradient-to-br from-purple-400/10 via-pink-400/10 to-yellow-300/10 rounded-xl blur-2xl z-[-1]" />
+          <ImageSlider images={data.images} />
         </div>
 
+        {/* Product Info Section */}
         <div className="space-y-6">
-          <div className="flex items-center gap-2 mb-2">
-           
-            <h1 className="text-3xl font-extrabold tracking-tight neon-text">{data.name}</h1>
-          </div>
-          <p className="text-3xl text-primary gradient-text">${data.price.toFixed(2)}</p>
-
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <StarIcon key={i} className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-            ))}
-            <span className="ml-2 text-sm text-muted-foreground">(5.0)</span>
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">
+              {data.name}
+            </h1>
+            <p className="mt-2 text-2xl font-semibold text-primary">
+              ${data.price.toFixed(2)}
+            </p>
           </div>
 
-          <p className="text-base text-muted-foreground">{data.description}</p>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            {data.description}
+          </p>
 
-          <ProductActions productId={data.id} status={productStatus} />
+          <div className="pt-6">
+            <ProductActions productId={data.id} status={productStatus} />
+          </div>
         </div>
       </div>
 
-      <div className="mt-16">
+      {/* Related Products */}
+      <div className="mt-24">
+        <h2 className="text-2xl font-semibold mb-6 text-foreground">
+          Related Products
+        </h2>
         <RelatedProducts category={data.category} currentProductId={data.id} />
       </div>
-    </div>
+    </section>
   )
 }
