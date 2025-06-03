@@ -72,7 +72,7 @@ export default async function BagRoute() {
   })
 
   // Convert USD to MWK
-  const exchangeRate = 4000;
+  const exchangeRate = 4200;
   const totalPriceInMWK = Math.round(totalPrice * exchangeRate * 100) / 100;
 
   return (

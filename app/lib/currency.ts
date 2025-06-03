@@ -3,7 +3,7 @@
  */
 
 
-const DEFAULT_MWK_TO_USD_RATE = 4000
+const DEFAULT_MWK_TO_USD_RATE = 4200
 
 /**
  * Convert USD to MWK
