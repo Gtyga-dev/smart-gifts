@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+
 import localFont from "next/font/local";
 import "./globals.css";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
@@ -19,10 +19,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title: "smart cards",
-  description: "Gift card marketplace",
-};
+
 
 export default function RootLayout({
   children,
