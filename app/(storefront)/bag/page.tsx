@@ -72,7 +72,7 @@ export default async function BagRoute() {
     totalItems += item.quantity
   })
 
-  const exchangeRate = 4200
+  const exchangeRate = 4300
   const totalPriceInMWK = Math.round(totalPrice * exchangeRate * 100) / 100
 
   return (
