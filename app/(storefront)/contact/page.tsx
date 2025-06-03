@@ -1,419 +1,168 @@
-"use client"
+"use client";
 
-import { useState, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs"
-import {
-  Loader2,
-  ShieldCheck,
-  CreditCard,
-  Smartphone,
-  Building,
-  CheckCircle,
-  AlertCircle,
-  ArrowRight,
-  Zap,
-} from "lucide-react"
-import axios from "axios"
-import { motion, AnimatePresence } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import React, { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
+const ContactPage = () => {
+  const { toast } = useToast();
 
-function PaymentPageContent() {
-  const [status, setStatus] = useState<"input" | "processing" | "success" | "failed">("input")
-  const [paymentMethod, setPaymentMethod] = useState<"mobile_money" | "bank">("mobile_money")
-  const [mobileMoneyProvider, setMobileMoneyProvider] = useState<"airtel" | "tnm">("airtel")
-  const [bank, setBank] = useState<"national" | "fdh" | "standard" | "first_capital">("national")
-  const [accountNumber, setAccountNumber] = useState("")
-  const [transactionId, setTransactionId] = useState("")
-  const searchParams = useSearchParams()
-  const depositId = searchParams.get("depositId")
-  const { isLoading } = useKindeBrowserClient()
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const initiatePayment = async () => {
-    if (!accountNumber || !depositId || !transactionId) {
-      alert("Please fill in all required fields")
-      return
+  const resetForm = () => {
+    setName("");
+    setEmail("");
+    setMessage("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Missing Fields",
+        description: "Please complete all fields before submitting.",
+      });
+      return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
-      setStatus("processing")
-      const response = await axios.post("/api/initiate-manual-payment", {
-        depositId,
-        paymentMethod,
-        provider: paymentMethod === "mobile_money" ? mobileMoneyProvider : bank,
-        accountNumber,
-        transactionId,
-      })
+      const response = await axios.post("/api/contact", {
+        name: name.trim(),
+        email: email.trim(),
+        message: message.trim(),
+      });
 
       if (response.data.success) {
-        setStatus("success")
+        toast({
+          title: "Success",
+          description: "Your message has been sent!",
+        });
+        resetForm();
       } else {
-        setStatus("failed")
+        toast({
+          variant: "destructive",
+          title: "Failed",
+          description: response.data.message || "Failed to send message.",
+        });
       }
     } catch (error) {
-      console.error("Payment initiation error:", error)
-      setStatus("failed")
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong. Please try again later.",
+      });
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
-  }
+  };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 cyber-grid">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-xl w-full space-y-10"
-      >
-        <div className="text-center space-y-4">
-          <div className="flex justify-center mb-2">
-            <Zap className="h-8 w-8 text-primary animate-pulse" />
-          </div>
-          <h1 className="text-4xl font-extrabold neon-text tracking-tight">
-            Complete Your <span className="gradient-text">Payment</span>
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
-            Securely finalize your purchase with our easy payment process. Your transaction is protected.
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-100 to-slate-200 dark:from-[#0f0f0f] dark:to-[#1e1e1e] flex items-center justify-center px-4 py-16">
+      <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 bg-white dark:bg-[#121212] shadow-2xl rounded-3xl overflow-hidden">
+        {/* Left illustration or banner */}
+        <div className="bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex flex-col justify-center items-center p-10">
+          <h2 className="text-3xl font-bold">Let’s Talk</h2>
+          <p className="text-sm opacity-90 mt-2 text-center">
+            Whether you have a question or just want to say hi, we’re happy to hear from you.
           </p>
+          <div className="mt-6 w-24 h-24 rounded-full bg-white/20 flex items-center justify-center">
+            📬
+          </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {status === "input" && (
-            <motion.div
-              key="input"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="bg-gradient-to-br from-card to-card/50 shadow-xl rounded-xl border border-primary/20 relative overflow-hidden">
-                {/* Glow overlay: ignore pointer events so inputs remain clickable */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl blur opacity-30 pointer-events-none"></div>
+        {/* Right form */}
+        <form
+          onSubmit={handleSubmit}
+          className="w-full p-8 md:p-10 space-y-6"
+        >
+          <div className="space-y-1">
+            <label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="John Doe"
+              disabled={isSubmitting}
+              className="bg-white dark:bg-neutral-900"
+              required
+            />
+          </div>
 
-                <CardHeader className="space-y-1">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="p-3 rounded-full bg-primary/10 animate-glow">
-                      <ShieldCheck className="h-8 w-8 text-primary" />
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl font-semibold">Payment Details</CardTitle>
-                  <CardDescription>Please provide your payment information to complete your order</CardDescription>
-                </CardHeader>
+          <div className="space-y-1">
+            <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              disabled={isSubmitting}
+              className="bg-white dark:bg-neutral-900"
+              required
+            />
+          </div>
 
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="paymentMethod" className="block text-sm font-medium">
-                      Payment Method <span className="text-primary">*</span>
-                    </Label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button
-                        type="button"
-                        variant={paymentMethod === "mobile_money" ? "default" : "outline"}
-                        className={`flex items-center justify-center gap-2 ${paymentMethod === "mobile_money"
-                            ? "bg-primary text-white"
-                            : "border-primary/20 hover:bg-primary/10"
-                          }`}
-                        onClick={() => setPaymentMethod("mobile_money")}
-                      >
-                        <Smartphone className="h-4 w-4" />
-                        <span>Mobile Money</span>
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={paymentMethod === "bank" ? "default" : "outline"}
-                        className={`flex items-center justify-center gap-2 ${paymentMethod === "bank" ? "bg-primary text-white" : "border-primary/20 hover:bg-primary/10"
-                          }`}
-                        onClick={() => setPaymentMethod("bank")}
-                      >
-                        <Building className="h-4 w-4" />
-                        <span>Bank Transfer</span>
-                      </Button>
-                    </div>
-                  </div>
+          <div className="space-y-1">
+            <label htmlFor="message" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Message <span className="text-red-500">*</span>
+            </label>
+            <Textarea
+              id="message"
+              rows={5}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type your message here..."
+              disabled={isSubmitting}
+              className="bg-white dark:bg-neutral-900"
+              required
+            />
+          </div>
 
-                  {paymentMethod === "mobile_money" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="mobileMoneyProvider" className="block text-sm font-medium">
-                        Mobile Money Provider <span className="text-primary">*</span>
-                      </Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Button
-                          type="button"
-                          variant={mobileMoneyProvider === "airtel" ? "default" : "outline"}
-                          className={`flex items-center justify-center ${mobileMoneyProvider === "airtel"
-                              ? "bg-primary text-white"
-                              : "border-primary/20 hover:bg-primary/10"
-                            }`}
-                          onClick={() => setMobileMoneyProvider("airtel")}
-                        >
-                          Airtel Money
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={mobileMoneyProvider === "tnm" ? "default" : "outline"}
-                          className={`flex items-center justify-center ${mobileMoneyProvider === "tnm"
-                              ? "bg-primary text-white"
-                              : "border-primary/20 hover:bg-primary/10"
-                            }`}
-                          onClick={() => setMobileMoneyProvider("tnm")}
-                        >
-                          TNM Mpamba
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {paymentMethod === "bank" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="bank" className="block text-sm font-medium">
-                        Bank <span className="text-primary">*</span>
-                      </Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Button
-                          type="button"
-                          variant={bank === "national" ? "default" : "outline"}
-                          className={`flex items-center justify-center ${bank === "national" ? "bg-primary text-white" : "border-primary/20 hover:bg-primary/10"
-                            }`}
-                          onClick={() => setBank("national")}
-                        >
-                          National Bank
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={bank === "fdh" ? "default" : "outline"}
-                          className={`flex items-center justify-center ${bank === "fdh" ? "bg-primary text-white" : "border-primary/20 hover:bg-primary/10"
-                            }`}
-                          onClick={() => setBank("fdh")}
-                        >
-                          FDH Bank
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={bank === "standard" ? "default" : "outline"}
-                          className={`flex items-center justify-center ${bank === "standard" ? "bg-primary text-white" : "border-primary/20 hover:bg-primary/10"
-                            }`}
-                          onClick={() => setBank("standard")}
-                        >
-                          Standard Bank
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={bank === "first_capital" ? "default" : "outline"}
-                          className={`flex items-center justify-center ${bank === "first_capital" ? "bg-primary text-white" : "border-primary/20 hover:bg-primary/10"
-                            }`}
-                          onClick={() => setBank("first_capital")}
-                        >
-                          First Capital
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="accountNumber" className="block text-sm font-medium">
-                      {paymentMethod === "mobile_money" ? (
-                        <>
-                          Phone Number <span className="text-primary">*</span>
-                        </>
-                      ) : (
-                        <>
-                          Account Number <span className="text-primary">*</span>
-                        </>
-                      )}
-                    </Label>
-                    <Input
-                      id="accountNumber"
-                      type="text"
-                      value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value)}
-                      placeholder={paymentMethod === "mobile_money" ? "265888123456" : "Enter account number"}
-                      className="mt-1 block w-full p-3 border border-primary/20 bg-card focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition-colors"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="transactionId" className="block text-sm font-medium">
-                      Transaction ID <span className="text-primary">*</span>
-                    </Label>
-                    <Input
-                      id="transactionId"
-                      type="text"
-                      value={transactionId}
-                      onChange={(e) => setTransactionId(e.target.value)}
-                      placeholder="Enter transaction ID"
-                      className="mt-1 block w-full p-3 border border-primary/20 bg-card focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition-colors"
-                    />
-                  </div>
-
-                  <Button
-                    onClick={initiatePayment}
-                    className="w-full py-4 px-4 text-white font-medium rounded-md bg-primary hover:bg-primary/90 transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-primary/50 animate-pulse-border group"
-                  >
-                    <div className="flex items-center justify-center space-x-2">
-                      <CreditCard className="h-5 w-5" />
-                      <span>Submit Payment</span>
-                    </div>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {status === "processing" && (
-            <motion.div
-              key="processing"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="bg-gradient-to-br from-card to-card/50 shadow-xl rounded-xl border border-primary/20 relative overflow-hidden">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl blur opacity-30 pointer-events-none"></div>
-                <CardContent className="p-8 text-center">
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-primary/10 animate-pulse">
-                      <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                    </div>
-                  </div>
-                  <h2 className="text-xl font-semibold mb-4 neon-text">Processing Your Payment</h2>
-                  <p className="text-muted-foreground mb-6">
-                    Your payment is being processed. Please wait for admin approval.
-                  </p>
-                  <div className="bg-yellow-900/10 border border-yellow-500/20 rounded-lg p-4">
-                    <p className="text-yellow-400 text-sm">
-                      You will receive an email confirmation once your payment is approved.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {status === "success" && (
-            <motion.div
-              key="success"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="bg-gradient-to-br from-card to-card/50 shadow-xl rounded-xl border border-green-500/30 relative overflow-hidden">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500/20 to-primary/20 rounded-xl blur opacity-30 pointer-events-none"></div>
-                <CardContent className="p-8 text-center">
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-green-500/10 animate-pulse">
-                      <CheckCircle className="h-12 w-12 text-green-500" />
-                    </div>
-                  </div>
-                  <h2 className="text-2xl font-semibold mb-4 text-green-500 neon-text">
-                    Payment Submitted Successfully!
-                  </h2>
-                  <p className="text-muted-foreground mb-6">
-                    Your payment has been submitted for approval. You will receive an email confirmation once it&apos;s
-                    processed.
-                  </p>
-                  <Button
-                    onClick={() => (window.location.href = "/orders")}
-                    className="w-full py-4 px-4 text-white font-medium rounded-md bg-primary hover:bg-primary/90 transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-primary/50 animate-pulse-border group"
-                  >
-                    <div className="flex items-center justify-center space-x-2">
-                      <ArrowRight className="h-5 w-5" />
-                      <span>View Order Details</span>
-                    </div>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {status === "failed" && (
-            <motion.div
-              key="failed"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="bg-gradient-to-br from-card to-card/50 shadow-xl rounded-xl border border-red-500/30 relative overflow-hidden">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500/20 to-primary/20 rounded-xl blur opacity-30 pointer-events-none"></div>
-                <CardContent className="p-8 text-center">
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-red-500/10 animate-pulse">
-                      <AlertCircle className="h-12 w-12 text-red-500" />
-                    </div>
-                  </div>
-                  <h2 className="text-xl font-semibold mb-4 text-red-500 neon-text">Payment Submission Failed</h2>
-                  <p className="text-muted-foreground mb-6">
-                    We couldn&apos;t process your payment submission. Please try again or contact support if the problem
-                    persists.
-                  </p>
-                  <Button
-                    onClick={() => setStatus("input")}
-                    className="w-full py-4 px-4 text-white font-medium rounded-md bg-primary hover:bg-primary/90 transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-primary/50 animate-pulse-border group"
-                  >
-                    <div className="flex items-center justify-center space-x-2">
-                      <ArrowRight className="h-5 w-5" />
-                      <span>Try Again</span>
-                    </div>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Payment instructions */}
-        {status === "input" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full h-12 text-lg font-semibold transition-all duration-300 ease-in-out"
           >
-            <Card className="bg-gradient-to-br from-card to-card/50 shadow-lg rounded-xl border border-primary/20 relative overflow-hidden">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl blur opacity-30 pointer-events-none"></div>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-primary" />
-                  Payment Instructions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs text-muted-foreground space-y-2">
-                <p>1. Make your payment using your selected payment method to our account.</p>
-                <p>2. Enter the transaction ID or reference number from your payment.</p>
-                <p>3. Submit your payment details for verification.</p>
-                <p>4. Once verified, your order will be processed and delivered.</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </motion.div>
+            {isSubmitting ? (
+              <div className="flex items-center space-x-2">
+                <span className="loader inline-block h-4 w-4 border-t-2 border-b-2 border-white rounded-full animate-spin"></span>
+                <span>Sending...</span>
+              </div>
+            ) : (
+              "Send Message"
+            )}
+          </Button>
+        </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default function PaymentPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="fixed inset-0 flex items-center justify-center bg-background">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      }
-    >
-      <PaymentPageContent />
-    </Suspense>
-  )
-}
+export default ContactPage;
