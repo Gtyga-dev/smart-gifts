@@ -53,15 +53,14 @@ async function checkOut(formData: FormData) {
 }
 
 
+// (imports and other logic unchanged...)
 
 export default async function BagRoute() {
   noStore()
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  if (!user) {
-    redirect("/")
-  }
+  if (!user) redirect("/")
 
   const cart: Cart | null = await redis.get(`cart-${user.id}`)
 
@@ -77,45 +76,42 @@ export default async function BagRoute() {
   const totalPriceInMWK = Math.round(totalPrice * exchangeRate * 100) / 100
 
   return (
-    <div className="max-w-5xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-5xl mx-auto mt-16 px-4 sm:px-6 lg:px-8 space-y-10">
       {!cart || !cart.items || cart.items.length === 0 ? (
-        <Card className="bg-gradient-to-br from-muted to-muted-foreground/10 shadow-xl rounded-2xl p-10 text-center">
-          <div className="flex flex-col items-center justify-center space-y-6">
-            <ShoppingBag className="w-16 h-16 text-primary animate-pulse" />
-            <h2 className="text-2xl font-bold tracking-tight text-balance">
-              Your cart is feeling a little empty
-            </h2>
-            <p className="text-muted-foreground max-w-md text-sm">
-              Browse our gift cards and find something you&apos;ll love.
+        <Card className="p-10 bg-muted/20 backdrop-blur-md rounded-2xl shadow-xl text-center">
+          <div className="flex flex-col items-center gap-5">
+            <ShoppingBag className="w-16 h-16 text-primary animate-bounce" />
+            <h2 className="text-2xl font-bold">Your cart is empty</h2>
+            <p className="text-sm text-muted-foreground max-w-md">
+              Browse our gift cards and find something special just for you.
             </p>
-            <Button asChild className="px-6 py-2 rounded-xl text-white bg-primary hover:bg-primary/90">
+            <Button asChild className="rounded-full px-6 py-2 bg-primary hover:bg-primary/90 text-white">
               <Link href="/">Explore Gift Cards</Link>
             </Button>
           </div>
         </Card>
       ) : (
-        <div className="space-y-10">
-          <Card className="rounded-2xl shadow-lg backdrop-blur-md bg-gradient-to-br from-background/50 to-muted/40 border border-muted/20">
-            <CardContent className="p-6 space-y-6">
+        <div className="grid gap-10">
+          {/* Cart Items */}
+          <Card className="p-6 bg-background/70 backdrop-blur-md rounded-2xl shadow-md border border-muted/30">
+            <CardContent className="space-y-6">
               {cart.items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-col sm:flex-row items-center justify-between gap-6 border-b last:border-none pb-4"
+                  className="flex flex-col sm:flex-row items-center justify-between gap-6 border-b pb-4 last:border-none"
                 >
                   <div className="flex items-center gap-4 w-full sm:w-1/2">
-                    <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg shadow-sm">
+                    <div className="relative w-24 h-24 overflow-hidden rounded-xl border shadow-sm">
                       <Image
-                        className="object-cover"
                         fill
+                        className="object-cover"
                         src={item.imageString || "/placeholder.svg"}
                         alt={item.name}
                       />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold">{item.name}</h3>
-                      <p className="text-muted-foreground text-sm">
-                        ${item.price.toFixed(2)} each
-                      </p>
+                      <p className="text-sm text-muted-foreground">${item.price.toFixed(2)} each</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -143,11 +139,16 @@ export default async function BagRoute() {
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="text-right space-y-2">
+                  <div className="text-right space-y-1">
                     <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
                     <form action={delItem}>
                       <input type="hidden" name="productId" value={item.id} />
-                      <Button type="submit" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10">
+                      <Button
+                        type="submit"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                      >
                         <X className="h-4 w-4" />
                       </Button>
                     </form>
@@ -157,8 +158,9 @@ export default async function BagRoute() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl shadow-lg bg-background/60 backdrop-blur-md border border-muted/20">
-            <CardContent className="p-6 space-y-6">
+          {/* Summary */}
+          <Card className="p-6 bg-background/70 backdrop-blur-md rounded-2xl shadow-md border border-muted/30">
+            <CardContent className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Order Summary</h2>
                 <span className="text-sm text-muted-foreground">
@@ -168,7 +170,7 @@ export default async function BagRoute() {
 
               <Separator />
 
-              <div className="grid gap-4 text-sm">
+              <div className="grid gap-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal (USD)</span>
                   <span className="font-medium">${totalPrice.toFixed(2)}</span>
@@ -177,7 +179,9 @@ export default async function BagRoute() {
                   <span className="text-muted-foreground">Subtotal (MWK)</span>
                   <span className="font-medium">MK{totalPriceInMWK.toFixed(2)}</span>
                 </div>
+
                 <Separator />
+
                 <div className="flex justify-between text-base font-semibold">
                   <span>Total (USD)</span>
                   <span>${totalPrice.toFixed(2)}</span>
