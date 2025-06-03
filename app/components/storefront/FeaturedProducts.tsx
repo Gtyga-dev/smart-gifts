@@ -1,6 +1,6 @@
 // This is a server component that fetches data
 import prisma from "@/app/lib/db"
-import { ProductCard, LoadingProductCard } from "./ProductCard"
+import { ProductCard } from "./ProductCard"
 import { Suspense } from "react"
 import { unstable_noStore as noStore } from "next/cache"
 import { ProductStatus } from "@prisma/client"
@@ -41,7 +41,7 @@ export function FeaturedProducts() {
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold tracking-tight mb-8 animate-fade-in-up">Featured Gift Cards</h2>
-        <Suspense fallback={<LoadingRows />}>
+        <Suspense >
           <LoadFeaturedproducts />
         </Suspense>
       </div>
@@ -59,16 +59,6 @@ async function LoadFeaturedproducts() {
       ) : (
         <p>No featured products available.</p>
       )}
-    </div>
-  )
-}
-
-function LoadingRows() {
-  return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <LoadingProductCard />
-      <LoadingProductCard />
-      <LoadingProductCard />
     </div>
   )
 }
