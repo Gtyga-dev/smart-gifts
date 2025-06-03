@@ -80,7 +80,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-100 to-slate-200 dark:from-[#0f0f0f] dark:to-[#1e1e1e] flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-gradient-to-br from-gray-500 via-slate-700 to-slate-200 dark:from-[#0f0f0f] dark:to-[#1e1e1e] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 bg-white dark:bg-[#121212] shadow-2xl rounded-3xl overflow-hidden">
         {/* Left illustration or banner */}
         <div className="bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex flex-col justify-center items-center p-10">

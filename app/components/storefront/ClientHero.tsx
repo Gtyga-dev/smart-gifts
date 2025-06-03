@@ -92,11 +92,6 @@ export function ClientHero() {
                   Get Gift Cards Now <ArrowRight size={16} className="ml-2" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-primary/20 text-white hover:bg-white/10" asChild>
-                <Link href="/how-it-works">
-                  See How You Can Surprise Someone <span className="ml-2">→</span>
-                </Link>
-              </Button>
             </div>
             <motion.div
               className="pt-4"

@@ -1,19 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client"
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
+import { motion, AnimatePresence } from "framer-motion"
+import { Menu, Search, ShoppingCart } from "lucide-react"
 import { NavbarLinks } from "./NavbarLinks"
-import { Menu, ShoppingCart, Search } from "lucide-react"
 import { UserDropdown } from "./UserDropdown"
 import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
-import Image from "next/image"
-import { Sheet, SheetTrigger, SheetContent, SheetHeader } from "@/components/ui/sheet"
-import { Separator } from "@/components/ui/separator"
-import { motion, AnimatePresence } from "framer-motion"
-
 
 interface NavbarClientProps {
   user: {
@@ -25,206 +21,143 @@ interface NavbarClientProps {
 }
 
 export function NavbarClient({ user, cartTotal }: NavbarClientProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-
-  const closeSheet = () => setIsOpen(false)
+  const [searchOpen, setSearchOpen] = useState(false)
 
   useEffect(() => {
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    const onScroll = () => setIsScrolled(window.scrollY > 10)
+    window.addEventListener("scroll", onScroll)
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-
-
   return (
-    <motion.nav
+    <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? "glass-effect shadow-md" : "bg-background"
-        }`}
+      transition={{ duration: 0.4 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "backdrop-blur-md shadow-md bg-background/70" : "bg-transparent"
+      }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between border-b mb-4 border-border">
-        {/* Logo and Links */}
-        <div className="flex items-center">
-          <Link href="/" className="mr-6">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center">
-              <div className="relative">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6 py-3">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/tlogo.png"
+            alt="Logo"
+            width={120}
+            height={40}
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
 
-                <Image src="/tlogo.png" alt="logo" width={150} height={40} className="h-8 w-auto filter brightness-0 invert" />
-              </div>
-            </motion.div>
-          </Link>
-          {/* Hidden on Mobile */}
-          <div className="hidden md:block">
-            <NavbarLinks />
-          </div>
+        {/* Desktop Nav */}
+        <div className="hidden md:flex gap-6 items-center">
+          <NavbarLinks />
         </div>
 
-        {/* Search, Cart, User Auth, Theme Toggle */}
-        <div className="flex items-center space-x-2 md:space-x-4">
-          {/* Theme toggle */}
-
-          {/* Search Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-primary"
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
+        {/* Actions */}
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Search */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setSearchOpen(!searchOpen)}
+            className="text-muted-foreground hover:text-primary transition"
           >
             <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
+          </motion.button>
 
-          {/* Cart Link - Always visible */}
-          <Link href="/bag" className="relative group">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-              <ShoppingCart className="h-5 w-5" />
+          {/* Cart */}
+          <Link href="/bag" className="relative">
+            <Button variant="ghost" size="icon">
+              <ShoppingCart className="h-5 w-5 text-muted-foreground" />
               {cartTotal > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center"
+                >
                   {cartTotal}
-                </span>
+                </motion.span>
               )}
-              <span className="sr-only">Shopping cart</span>
             </Button>
           </Link>
 
-          {/* User Dropdown or Sign In / Create Account */}
+          {/* User or Auth */}
           {user ? (
             <UserDropdown
               email={user.email}
               name={user.given_name}
-              userImage={user.picture ?? `https://avatar.vercel.sh/${user.given_name}`}
+              userImage={user.picture || `https://avatar.vercel.sh/${user.given_name}`}
             />
           ) : (
-            <>
-              {/* Desktop Sign In / Create Account */}
-              <div className="hidden md:flex space-x-2">
-                <Button
-                  variant="outline"
-                  asChild
-                  size="sm"
-                  className="border-primary/20 hover:bg-primary/10 text-primary"
-                >
-                  <Link href="/auth/sign-in">Sign in</Link>
-                </Button>
-                <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Link href="/auth/sign-up">Create Account</Link>
-                </Button>
-              </div>
-              {/* Mobile Sign In Button */}
-              <div className="md:hidden">
-                <Button
-                  variant="outline"
-                  asChild
-                  size="sm"
-                  className="border-primary/20 hover:bg-primary/10 text-primary"
-                >
-                  <Link href="/auth/sign-in">Sign in</Link>
-                </Button>
-              </div>
-            </>
+            <div className="hidden md:flex gap-2">
+              <Button asChild variant="ghost" className="text-primary hover:bg-primary/10">
+                <Link href="/auth/sign-in">Sign in</Link>
+              </Button>
+              <Button asChild className="bg-primary text-white hover:bg-primary/90">
+                <Link href="/auth/sign-up">Get Started</Link>
+              </Button>
+            </div>
           )}
 
-          {/* Mobile Menu Trigger */}
+          {/* Mobile Nav Toggle */}
           <div className="md:hidden">
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Open menu</span>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5 text-muted-foreground" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-64 bg-card overflow-y-auto border-r border-border">
-                <SheetHeader>
-                  {/* Logo in Mobile Menu */}
-                  <Link href="/" className="flex items-center mb-6" onClick={closeSheet}>
-                    <div className="relative">
-
-                      <Image
-                        src="/tlogo.png"
-                        alt="logo"
-                        width={120}
-                        height={40}
-                        className="h-8 w-auto filter brightness-0 invert"
-                      />
+              <SheetContent side="left" className="bg-background">
+                <div className="flex flex-col gap-6 mt-8">
+                  <NavbarLinks isMobile onLinkClick={() => null} />
+                  {!user && (
+                    <div className="flex flex-col gap-2">
+                      <Button asChild variant="outline">
+                        <Link href="/auth/sign-in">Sign in</Link>
+                      </Button>
+                      <Button asChild>
+                        <Link href="/auth/sign-up">Get Started</Link>
+                      </Button>
                     </div>
-                  </Link>
-                </SheetHeader>
-                <Separator className="my-4" />
-
-                {/* Mobile Menu Links - only show if user is logged in */}
-                {user && (
-                  <div className="space-y-4 mt-4">
-                    <NavbarLinks isMobile={true} onLinkClick={closeSheet} />
-                  </div>
-                )}
-
-                {/* Sign In / Create Account on Mobile */}
-                {!user && (
-                  <div className="mt-6 space-y-2">
-                    <Button
-                      variant="outline"
-                      asChild
-                      className="w-full border-primary/20 hover:bg-primary/10 text-primary"
-                      onClick={closeSheet}
-                    >
-                      <Link href="/auth/sign-in">Sign in</Link>
-                    </Button>
-                    <Button
-                      asChild
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                      onClick={closeSheet}
-                    >
-                      <Link href="/auth/sign-up">Create Account</Link>
-                    </Button>
-                  </div>
-                )}
+                  )}
+                </div>
               </SheetContent>
             </Sheet>
           </div>
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Input Animated */}
       <AnimatePresence>
-        {isSearchOpen && (
+        {searchOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="border-b border-border overflow-hidden glass-effect"
+            className="overflow-hidden border-t border-border bg-background"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
-                  placeholder="Search for gift cards..."
+                  placeholder="Search for items, categories..."
                   className="pl-10 bg-card border-primary/20 focus:border-primary"
                   autoFocus
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary"
-                  onClick={() => setIsSearchOpen(false)}
+                <button
+                  onClick={() => setSearchOpen(false)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                 >
-                  <span className="sr-only">Close search</span>
                   &times;
-                </Button>
+                </button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </motion.header>
   )
 }
