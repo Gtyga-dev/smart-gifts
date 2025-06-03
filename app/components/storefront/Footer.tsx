@@ -126,27 +126,7 @@ export function Footer() {
               </li>
             ))}
           </ul>
-        </motion.div>
-
-        {/* Support */}
-        <motion.div variants={itemVariants}>
-          <h4 className="text-white text-lg font-semibold mb-4">Support</h4>
-          <ul className="space-y-3 text-sm">
-            {[
-              { label: "Terms", href: "/terms" },
-              { label: "Privacy", href: "/privacy" },
-              { label: "Shipping", href: "/shipping" },
-              { label: "Returns", href: "/returns" },
-            ].map(({ label, href }) => (
-              <li key={label}>
-                <Link href={href} className="flex items-center gap-2 text-muted-foreground hover:text-white transition">
-                  <ChevronRight className="h-4 w-4 text-primary" />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+        </motion.div>  
       </div>
 
       {/* Bottom bar */}

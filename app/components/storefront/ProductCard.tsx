@@ -1,100 +1,153 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
+import type React from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import Image from "next/image"
 import Link from "next/link"
-import { ShoppingCart, Heart } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
+import { ShoppingCart } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { toast } from "@/hooks/use-toast"
+import { addItem } from "@/app/actions"
+import { useToast } from "@/hooks/use-toast"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useState } from "react"
 import { ProductStatus } from "@prisma/client"
+import { OutOfStockBadge } from "./OutofStockBadge"
+import { motion } from "framer-motion"
 
-interface ProductCardProps {
+interface iAppProps {
   item: {
     id: string
     name: string
-    price: number
     description: string
+    price: number
     images: string[]
     status: ProductStatus
   }
 }
 
-export function ProductCard({ item }: ProductCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false)
-  const [adding, setAdding] = useState(false)
+export function ProductCard({ item }: iAppProps) {
+  const { toast } = useToast()
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const isOutOfStock = item.status === ProductStatus.archived
 
-  const handleAddToCart = async () => {
-    if (item.status === ProductStatus.archived) {
-      toast({ title: "Out of Stock", variant: "destructive" })
+  const handleAddProductToShoppingCart = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isOutOfStock) {
+      toast({
+        title: "Out of Stock",
+        description: "This product is currently out of stock.",
+        variant: "destructive",
+      })
       return
     }
 
-    setAdding(true)
-    setTimeout(() => {
-      setAdding(false)
-      toast({ title: "Added to cart", description: item.name })
-    }, 800)
-  }
-
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite)
-    toast({
-      title: isFavorite ? "Removed from wishlist" : "Added to wishlist",
-      description: item.name,
-    })
+    setIsAddingToCart(true)
+    try {
+      await addItem(item.id)
+      toast({
+        title: `${item.name}`,
+        description: "Item has been added to cart!",
+        variant: "default",
+      })
+    } catch {
+      toast({
+        title: "Warning",
+        description: "Please sign in to add items to the cart.",
+        variant: "destructive",
+        action: (
+          <Link href="/auth/sign-in">
+            <Button variant="ghost" size="sm">
+              Sign In
+            </Button>
+          </Link>
+        ),
+      })
+    } finally {
+      setIsAddingToCart(false)
+    }
   }
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
-      className="relative rounded-lg border border-border bg-background shadow-sm hover:shadow-lg transition-all overflow-hidden"
+      className="group relative rounded-xl overflow-hidden bg-muted shadow-sm hover:shadow-xl transition-all duration-300 border border-border"
     >
-      <Link href={`/product/${item.id}`} className="block group">
-        <div className="relative h-56 w-full overflow-hidden">
-          <Image
-            src={item.images[0] || "/placeholder.svg"}
-            alt={item.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+      {/* IMAGE CAROUSEL */}
+      <div className="relative w-full">
+        <Carousel className="w-full">
+          <CarouselContent>
+            {item.images.map((image, index) => (
+              <CarouselItem key={index} className="w-full flex-shrink-0">
+                <div className="relative h-[230px] bg-zinc-100">
+                  <Image
+                    src={image || "/placeholder.svg"}
+                    alt={`${item.name} - Image ${index + 1}`}
+                    fill
+                    className="object-cover object-center w-full h-full transition-transform duration-500 group-hover:scale-105 rounded-t-xl"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-background/70 backdrop-blur-sm hover:bg-background h-7 w-7" />
+          <CarouselNext className="right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-background/70 backdrop-blur-sm hover:bg-background h-7 w-7" />
+        </Carousel>
+
+        {isOutOfStock && <OutOfStockBadge />}
+      </div>
+
+      {/* CONTENT */}
+      <div className="p-4 space-y-2">
+        <div className="flex justify-between items-start gap-2">
+          <h1 className="font-semibold text-sm text-foreground line-clamp-1">
+            {item.name}
+          </h1>
+          <Badge className="bg-primary text-white px-2 py-0.5 text-xs rounded">
+            ${item.price.toFixed(2)}
+          </Badge>
         </div>
 
-        <div className="p-4 space-y-2">
-          <div className="flex justify-between items-start">
-            <h3 className="font-semibold text-base text-foreground line-clamp-1">
-              {item.name}
-            </h3>
-            <Badge className="bg-primary text-white text-xs">${item.price.toFixed(2)}</Badge>
-          </div>
+        <p className="text-muted-foreground text-xs leading-snug line-clamp-2">
+          {item.description}
+        </p>
 
-          <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
-
-          <div className="flex items-center justify-between mt-4">
-            <Button variant="ghost" size="icon" onClick={(e) => { e.preventDefault(); toggleFavorite(); }}>
-              <Heart
-                className={`h-4 w-4 transition-all ${isFavorite ? "fill-primary text-primary" : ""}`}
-              />
-            </Button>
-
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={(e) => {
-                e.preventDefault()
-                handleAddToCart()
-              }}
-              disabled={adding}
-              className="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-primary text-white hover:bg-primary/90 transition-all"
-            >
-              {adding ? "Adding..." : "Add to Cart"}
-              <ShoppingCart className="h-4 w-4" />
-            </motion.button>
-          </div>
-        </div>
-      </Link>
+        <Button
+          className="w-full h-9 mt-2 text-sm gap-2"
+          variant="default"
+          onClick={handleAddProductToShoppingCart}
+          disabled={isAddingToCart || isOutOfStock}
+        >
+          {isAddingToCart ? (
+            <span className="h-4 w-4 animate-spin">⏳</span>
+          ) : (
+            <ShoppingCart className="h-4 w-4" />
+          )}
+          <span>Add to Cart</span>
+        </Button>
+      </div>
     </motion.div>
+  )
+}
+
+export function LoadingProductCard() {
+  return (
+    <div className="rounded-xl overflow-hidden bg-muted p-3 animate-pulse border border-border">
+      <Skeleton className="w-full h-[230px] rounded-lg" />
+      <div className="flex flex-col mt-3 space-y-1.5">
+        <Skeleton className="h-3.5 w-3/4" />
+        <Skeleton className="h-3.5 w-1/4" />
+      </div>
+      <Skeleton className="w-full h-9 mt-4 rounded-md" />
+    </div>
   )
 }

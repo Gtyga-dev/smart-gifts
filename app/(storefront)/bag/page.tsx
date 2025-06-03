@@ -52,6 +52,8 @@ async function checkOut(formData: FormData) {
   return redirect("/")
 }
 
+
+
 export default async function BagRoute() {
   noStore()
   const { getUser } = getKindeServerSession()
@@ -71,34 +73,37 @@ export default async function BagRoute() {
     totalItems += item.quantity
   })
 
-  // Convert USD to MWK
-  const exchangeRate = 4200;
-  const totalPriceInMWK = Math.round(totalPrice * exchangeRate * 100) / 100;
+  const exchangeRate = 4200
+  const totalPriceInMWK = Math.round(totalPrice * exchangeRate * 100) / 100
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-5xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
       {!cart || !cart.items || cart.items.length === 0 ? (
-        <Card className="p-8 bg-gradient-to-br from-gray-500 to-gray-600 dark:from-gray-900 dark:to-gray-800 shadow-lg">
-          <div className="flex flex-col items-center justify-center text-center">
-            <ShoppingBag className="w-16 h-16 text-primary mb-4" />
-            <h2 className="text-2xl font-semibold mb-2 text-center">You don&apos;t have any products in your cart</h2>
-            <p className="text-muted-foreground mb-6 max-w-sm">
-              Looks like you haven&apos;t added any gift cards to your cart yet. Start shopping to find the perfect
-              gift!
+        <Card className="bg-gradient-to-br from-muted to-muted-foreground/10 shadow-xl rounded-2xl p-10 text-center">
+          <div className="flex flex-col items-center justify-center space-y-6">
+            <ShoppingBag className="w-16 h-16 text-primary animate-pulse" />
+            <h2 className="text-2xl font-bold tracking-tight text-balance">
+              Your cart is feeling a little empty
+            </h2>
+            <p className="text-muted-foreground max-w-md text-sm">
+              Browse our gift cards and find something you&apos;ll love.
             </p>
-            <Button asChild className="bg-primary hover:bg-primary/90 text-white">
+            <Button asChild className="px-6 py-2 rounded-xl text-white bg-primary hover:bg-primary/90">
               <Link href="/">Explore Gift Cards</Link>
             </Button>
           </div>
         </Card>
       ) : (
-        <div className="space-y-8">
-          <Card className="overflow-hidden bg-gradient-to-br from-gray-600 to-gray-500 dark:from-gray-900 dark:to-gray-800 shadow-lg">
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                {cart.items.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-4 py-4 first:pt-0 last:pb-0">
-                    <div className="relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
+        <div className="space-y-10">
+          <Card className="rounded-2xl shadow-lg backdrop-blur-md bg-gradient-to-br from-background/50 to-muted/40 border border-muted/20">
+            <CardContent className="p-6 space-y-6">
+              {cart.items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col sm:flex-row items-center justify-between gap-6 border-b last:border-none pb-4"
+                >
+                  <div className="flex items-center gap-4 w-full sm:w-1/2">
+                    <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg shadow-sm">
                       <Image
                         className="object-cover"
                         fill
@@ -106,83 +111,84 @@ export default async function BagRoute() {
                         alt={item.name}
                       />
                     </div>
-                    <div className="flex-grow">
-                      <h3 className="font-semibold text-lg">{item.name}</h3>
-                      <p className="text-sm text-white">${item.price.toFixed(2)} each</p>
-                      <div className="flex items-center mt-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 "
-                          onClick={async () => {
-                            "use server"
-                            await updateQuantity(item.id, item.quantity - 1, user.id)
-                          }}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="mx-3 font-medium">{item.quantity}</span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={async () => {
-                            "use server"
-                            await updateQuantity(item.id, item.quantity + 1, user.id)
-                          }}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
-                      <form action={delItem} className="mt-2">
-                        <input type="hidden" name="productId" value={item.id} />
-                        <Button type="submit" variant="ghost" size="icon" className="h-8 w-8">
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </form>
+                    <div>
+                      <h3 className="text-lg font-semibold">{item.name}</h3>
+                      <p className="text-muted-foreground text-sm">
+                        ${item.price.toFixed(2)} each
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={async () => {
+                        "use server"
+                        await updateQuantity(item.id, item.quantity - 1, user.id)
+                      }}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-base font-medium">{item.quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={async () => {
+                        "use server"
+                        await updateQuantity(item.id, item.quantity + 1, user.id)
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="text-right space-y-2">
+                    <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                    <form action={delItem}>
+                      <input type="hidden" name="productId" value={item.id} />
+                      <Button type="submit" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10">
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </form>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/20 dark:to-primary/30 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
+
+          <Card className="rounded-2xl shadow-lg bg-background/60 backdrop-blur-md border border-muted/20">
+            <CardContent className="p-6 space-y-6">
+              <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Order Summary</h2>
                 <span className="text-sm text-muted-foreground">
-                  {totalItems} item{totalItems !== 1 ? "s" : ""}
+                  {totalItems} item{totalItems !== 1 && "s"}
                 </span>
               </div>
-              <Separator className="my-4" />
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
+
+              <Separator />
+
+              <div className="grid gap-4 text-sm">
+                <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal (USD)</span>
+                  <span className="font-medium">${totalPrice.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Subtotal (MWK)</span>
+                  <span className="font-medium">MK{totalPriceInMWK.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between text-base font-semibold">
+                  <span>Total (USD)</span>
                   <span>${totalPrice.toFixed(2)}</span>
                 </div>
-                <Separator />
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Subtotal (MWK)</span>
-                  <span>MK{totalPriceInMWK.toFixed(2)}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between items-center text-lg font-semibold">
-                  <span>Total (USD):</span>
-                  <div className="text-right">
-                    <div>${totalPrice.toFixed(2)}</div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center text-lg font-semibold">
-                  <span>Total (MWK):</span>
-                  <div className="text-right">
-                    <div>MWK{totalPriceInMWK.toFixed(2)}</div>
-                  </div>
+                <div className="flex justify-between text-base font-semibold">
+                  <span>Total (MWK)</span>
+                  <span>MWK{totalPriceInMWK.toFixed(2)}</span>
                 </div>
               </div>
-              <form action={checkOut} className="mt-6">
+
+              <form action={checkOut} className="pt-4">
                 <CheckoutButton />
               </form>
             </CardContent>
