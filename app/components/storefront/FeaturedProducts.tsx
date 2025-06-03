@@ -40,7 +40,7 @@ export function FeaturedProducts() {
   return (
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold tracking-tight mb-8 animate-fade-in-up">Featured Gift Cards</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-purple-600 mb-8 animate-fade-in-up">Featured Products</h2>
         <Suspense >
           <LoadFeaturedproducts />
         </Suspense>

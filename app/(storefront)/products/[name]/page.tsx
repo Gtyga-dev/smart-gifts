@@ -4,7 +4,6 @@ import { notFound } from "next/navigation"
 import { unstable_noStore as noStore } from "next/cache"
 import { ProductStatus, type Category } from "@prisma/client"
 
-
 type Product = {
   id: string
   name: string
@@ -17,67 +16,81 @@ type Product = {
 async function getData(productCategory: string) {
   const baseQuery = {
     select: {
+      id: true,
       name: true,
       images: true,
       price: true,
-      id: true,
       description: true,
       status: true,
     },
     where: {
-      status: { in: [ProductStatus.published, ProductStatus.archived] },
+      status: {
+        in: [ProductStatus.published, ProductStatus.archived],
+      },
     },
   }
 
-  switch (productCategory) {
-    case "all": {
-      const data = await prisma.product.findMany(baseQuery)
+  if (productCategory === "all") {
+    const data = await prisma.product.findMany(baseQuery)
 
-      return {
-        title: "All Products",
-        data: data as Product[],
-      }
-    }
-    case "fashion":
-    case "retail":
-    case "entertainment":
-    case "crypto":
-    case "wallets":
-    case "utilities": {
-      const data = await prisma.product.findMany({
-        ...baseQuery,
-        where: {
-          ...baseQuery.where,
-          category: productCategory as Category,
-        },
-      })
-
-      return {
-        title: `Products for ${productCategory.charAt(0).toUpperCase() + productCategory.slice(1)}`,
-        data: data as Product[],
-      }
-    }
-    default: {
-      return notFound()
+    return {
+      title: "All Products",
+      data: data as Product[],
     }
   }
+
+  const validCategories: Category[] = [
+    "fashion",
+    "retail",
+    "entertainment",
+    "crypto",
+    "wallets",
+    "utilities",
+  ]
+
+  if (validCategories.includes(productCategory as Category)) {
+    const data = await prisma.product.findMany({
+      ...baseQuery,
+      where: {
+        ...baseQuery.where,
+        category: productCategory as Category,
+      },
+    })
+
+    const title =
+      "Products for " +
+      productCategory.charAt(0).toUpperCase() + productCategory.slice(1)
+
+    return {
+      title,
+      data: data as Product[],
+    }
+  }
+
+  return notFound()
 }
 
-export default async function CategoriesPage(props: {
+export default async function CategoriesPage({
+  params,
+}: {
   params: Promise<{ name: string }>
 }) {
-  const params = await props.params
+  const { name } = await params
   noStore()
-  const { data, title } = await getData(params.name)
-  return (
-    <section className="cyber-grid">
-      <div className="flex items-center gap-2 mb-6">
 
-        <h1 className="font-semibold text-3xl neon-text">{title}</h1>
+  const { data, title } = await getData(name)
+
+  return (
+    <section className="w-full max-w-7xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-primary neon-text">
+          {title}
+        </h1>
       </div>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {data.map((item: Product) => (
-          <ProductCard item={item} key={item.id} />
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {data.map((item) => (
+          <ProductCard key={item.id} item={item} />
         ))}
       </div>
     </section>

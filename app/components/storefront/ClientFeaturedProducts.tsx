@@ -29,7 +29,7 @@ export function ClientFeaturedProducts({ products }: ClientFeaturedProductsProps
           transition={{ duration: 0.5 }}
           className="text-3xl font-bold tracking-tight mb-8"
         >
-          Featured Gift Cards
+          Our Products
         </motion.h2>
         <motion.div
           variants={containerVariants}

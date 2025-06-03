@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, Search, ShoppingCart } from "lucide-react"
+import { Menu, Search, ShoppingBag  } from "lucide-react"
 import { NavbarLinks } from "./NavbarLinks"
 import { UserDropdown } from "./UserDropdown"
 import { Button } from "@/components/ui/button"
@@ -35,7 +35,7 @@ export function NavbarClient({ user, cartTotal }: NavbarClientProps) {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? "backdrop-blur-md shadow-md bg-background/70" : "bg-transparent"
       }`}
     >
@@ -70,7 +70,7 @@ export function NavbarClient({ user, cartTotal }: NavbarClientProps) {
           {/* Cart */}
           <Link href="/bag" className="relative">
             <Button variant="ghost" size="icon">
-              <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+              <ShoppingBag className="h-5 w-5 text-muted-foreground" />
               {cartTotal > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
@@ -106,23 +106,56 @@ export function NavbarClient({ user, cartTotal }: NavbarClientProps) {
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5 text-muted-foreground" />
+                  <Menu className="h-6 w-6 text-muted-foreground" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="bg-background">
-                <div className="flex flex-col gap-6 mt-8">
-                  <NavbarLinks isMobile onLinkClick={() => null} />
-                  {!user && (
-                    <div className="flex flex-col gap-2">
-                      <Button asChild variant="outline">
-                        <Link href="/auth/sign-in">Sign in</Link>
-                      </Button>
-                      <Button asChild>
-                        <Link href="/auth/sign-up">Get Started</Link>
-                      </Button>
+
+              <SheetContent
+                side="left"
+                className="p-0 bg-black/90 backdrop-blur-md max-w-xs w-full flex flex-col"
+                style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0px 8px 24px" }}
+              >
+                {/* Header with Close */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                  {user ? (
+                    <div className="flex items-center gap-4">
+                      <Image
+                        src="/tlogo.png"
+                       alt="logo"
+                        width={48}
+                        height={48}
+                        className="rounded-full object-cover"
+                      />
                     </div>
+                  ) : (
+                    <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
                   )}
+                  <SheetTrigger asChild>
+                  
+                  </SheetTrigger>
                 </div>
+
+                {/* Nav Links */}
+                <nav className="flex flex-col gap-6 mt-6 px-6">
+                  <NavbarLinks
+                    isMobile
+                    onLinkClick={() => {
+                      // close menu on link click if needed
+                    }}
+                  />
+                </nav>
+
+                {/* Auth Buttons if no user */}
+                {!user && (
+                  <div className="flex flex-col gap-4 mt-auto px-6 pb-8 pt-10 border-t border-gray-200">
+                    <Button asChild variant="outline" className="w-full py-3 text-primary border-primary hover:bg-primary/10">
+                      <Link href="/auth/sign-in">Sign in</Link>
+                    </Button>
+                    <Button asChild className="w-full py-3 bg-primary text-white hover:bg-primary/90">
+                      <Link href="/auth/sign-up">Get Started</Link>
+                    </Button>
+                  </div>
+                )}
               </SheetContent>
             </Sheet>
           </div>
