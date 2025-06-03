@@ -42,10 +42,10 @@ function PaymentPageContent() {
   }
 
   const bankAccounts = {
-    national: "1011725615 - Trickal Holdings",
-    fdh: "0987654321 - Currently not working",
-    standard: "9100005778317",
-    first_capital: "2468013579 - Currently not working",
+    national: "xxxxxxxxx - Currently not working",
+    fdh: "1170000140895 - Geoffrey",
+    standard: "xxxxxxxxx - Currently not working",
+    first_capital: "xxxxxxxxx - Currently not working",
   }
 
   const initiatePayment = async () => {
